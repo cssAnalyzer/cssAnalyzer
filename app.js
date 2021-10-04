@@ -8,7 +8,6 @@ const createError = require("http-errors");
 const app = express();
 
 const main = require("./routes/api/main");
-const attributes = require("./routes/api/attributes");
 
 const corsOptions = {
   origin: process.env.CLIENT_URL,
@@ -21,7 +20,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/", main);
-app.use("/attributes", attributes);
 
 // app.use(function (req, res, next) {
 //   next(createError(404));
