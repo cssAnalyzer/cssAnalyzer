@@ -1,11 +1,11 @@
-const OK = 200;
+const { OK } = require("../../constants/statusCodes");
 
 function getMain(req, res, next) {
-  //
+  try {
+    res.status(OK).json({ result: "ok" });
+  } catch (err) {
+    next(err);
+  }
 }
 
-function postMain(req, res, next) {
-  res.status(OK).json({ result: "ok" });
-}
-
-module.exports = { getMain, postMain };
+module.exports = { getMain };

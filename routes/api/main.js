@@ -8,12 +8,12 @@ const colorController = require("../controller/color");
 
 router.get("/", mainController.getMain);
 
-router.get("/", attributesController.getAttributes);
+router.get("/attributes", attributesController.getAttributes);
 
-router.get("/", tagsController.getTags);
+router.get("/tags", tagsController.getTags);
 
-router.get("/", browserController.getBrowser);
+router.get("/browser", browserController.getBrowser);
 
-router.get("/", colorController.getColor);
+router.get("/color", colorController.getColor);
 
 module.exports = router;
