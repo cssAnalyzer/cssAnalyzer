@@ -4,7 +4,6 @@ const { OK } = require("../../constants/statusCodes");
 
 async function getTags(req, res, next) {
   try {
-    const result = {};
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -12,21 +11,35 @@ async function getTags(req, res, next) {
     await page.waitForXPath("//*[@*]");
 
     const nodeList = await page.$x("//*[@*]");
-    const tags = await page.evaluate((...nodeList) => {
-      return nodeList.map(elem => elem.tagName);
+    const organizedTagInfo = await page.evaluate((...nodeList) => {
+      const result = {};
+
+      nodeList.forEach(elem => {
+        if (!Object.keys(result).includes(elem.tagName)) {
+          result[elem.tagName] = 1;
+        } else {
+          result[elem.tagName] += 1;
+        }
+      });
+
+      return result;
     }, ...nodeList);
 
-    tags.forEach(element => {
-      if (!Object.keys(result).includes(element)) {
-        result[element] = 1;
-      } else {
-        result[element] += 1;
-      }
+    const tagData = [];
+
+    Object.keys(organizedTagInfo).forEach(tag => {
+      tagData.push({
+        name: tag,
+        radius: organizedTagInfo[tag],
+      });
     });
 
     await browser.close();
 
-    res.status(OK).send({ data: result });
+    res.status(OK).send({
+      totalNum: nodeList.length,
+      filteredData: tagData,
+    });
   } catch (err) {
     next(err);
   }
