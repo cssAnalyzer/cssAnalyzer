@@ -1,9 +1,11 @@
+const { query } = require("express");
 const puppeteer = require("puppeteer");
 
 const { OK } = require("../../constants/statusCodes");
 
 async function getAttributes(req, res, next) {
   try {
+    const result = {};
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -14,18 +16,44 @@ async function getAttributes(req, res, next) {
     const elementStyles = [];
 
     for (const element of elements) {
-      const style = await page.evaluate((e) => {
-        const computedStyle = window.getComputedStyle(e);
+      const styles = await page.evaluate((element) => {
+        const styleList = element.style;
 
-        return [...computedStyle].reduce((elementStyles, property) =>
+        return [...styleList].reduce((elementStyles, property) =>
           ( { ...elementStyles,
-            [property]: computedStyle.getPropertyValue(property) } ), {} );
+            [property]: styleList.getPropertyValue(property) } ), {} );
       }, element);
-      elementStyles.push(style);
+      elementStyles.push(styles);
     }
-    console.log(elementStyles);
 
-    res.status(OK).send({ data: "OK" });
+    const filteredStyles = elementStyles.filter(
+      item => Object.keys(item).length !== 0);
+
+    filteredStyles.forEach(attribute => {
+      for (const [key, value] of Object.entries(attribute)) {
+        if (!Object.keys(result).includes(key)) {
+          result[key] = new Array();
+        }
+        result[key].push(value);
+      }
+    });
+
+    const propertiesData = [];
+
+    for (const [key, value] of Object.entries(result)) {
+      propertiesData.push({
+        name: key,
+        radius: value.length,
+        props: value,
+      });
+    }
+
+    await browser.close();
+
+    res.status(OK).send({
+      totalNum: filteredStyles.length,
+      filteredData: propertiesData,
+    });
   } catch (err) {
     next(err);
   }
