@@ -1,4 +1,3 @@
-const { query } = require("express");
 const puppeteer = require("puppeteer");
 
 const { OK } = require("../../constants/statusCodes");
