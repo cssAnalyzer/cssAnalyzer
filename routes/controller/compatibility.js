@@ -125,6 +125,7 @@ async function getCompatibility(req, res, next) {
     }
 
     res.status(OK).send({
+      totalNum: styleData.length,
       filteredData: {
         name: "pieData",
         children: pieData,

@@ -19,7 +19,11 @@ async function getColor(req, res, next) {
     });
 
     await browser.close();
-    res.status(OK).send({ filteredData: colors });
+
+    res.status(OK).send({
+      totalNum: colors.length,
+      filteredData: colors,
+    });
   } catch (err) {
     next(err);
   }
