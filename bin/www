@@ -1,4 +1,4 @@
-const app = require("../app");
+const app = require("../main");
 const debug = require("debug")("cssanalyzer-server:server");
 const http = require("http");
 
