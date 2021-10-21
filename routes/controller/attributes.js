@@ -1,12 +1,22 @@
 const puppeteer = require("puppeteer");
-
-const { OK } = require("../../constants/statusCodes");
+const createError = require("http-errors");
+const { ENTERED_URI_LOGIC_ERROR } = require("../../constants/messages");
+const { BAD_REQUEST, OK } = require("../../constants/statusCodes");
 
 async function getAttributes(req, res, next) {
   try {
     const result = {};
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
+
+    page.on("pageerror", pageerr=> {
+      next(createError(BAD_REQUEST, ENTERED_URI_LOGIC_ERROR));
+    });
+
+    await page.setRequestInterception(true);
+    page.on("request", req => {
+      (req.resourceType() === "image" || req.resourceType() == "font") ? req.abort() : req.continue();
+    });
 
     await page.goto(req.query.inputUrl, { waitUntil: "networkidle2" });
     await page.waitForXPath("//*[@*]");
