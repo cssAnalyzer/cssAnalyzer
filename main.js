@@ -8,7 +8,6 @@ const logger = require("morgan");
 const createError = require("http-errors");
 
 const app = express();
-
 const main = require("./routes/api/main");
 
 const corsOptions = {
