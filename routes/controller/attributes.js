@@ -5,6 +5,10 @@ const { BAD_REQUEST, OK } = require("../../constants/statusCodes");
 
 async function getAttributes(req, res, next) {
   try {
+    if (!req.query.inputUrl) {
+      next(createError(BAD_REQUEST, ENTERED_URI_LOGIC_ERROR));
+    }
+
     const result = {};
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
 

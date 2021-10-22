@@ -10,6 +10,11 @@ async function getColor(req, res, next) {
       count: 10,
       type: "image/png",
     }
+
+    if (!req.query.inputUrl) {
+      next(createError(BAD_REQUEST, ENTERED_URI_LOGIC_ERROR));
+    }
+
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
     const page = await browser.newPage();
 
