@@ -17,20 +17,20 @@ async function getAttributes(req, res, next) {
       (req.resourceType() === "image" || req.resourceType() == "font") ? req.abort() : req.continue();
     });
 
-    await page.goto(req.query.inputUrl.toString(), { waitUntil: "networkidle2" });
+    await page.goto(req.query.inputUrl, { waitUntil: "networkidle2" });
     await page.waitForXPath("//*[@*]");
 
     const elements = await page.$$("*");
     const elementStyles = [];
 
     for (const element of elements) {
-      const styles = await page.evaluate( element => {
+      const styles = await page.evaluate(` element => {
         const styleList = element.style;
 
         return [...styleList].reduce((elementStyles, property) =>
           ( { ...elementStyles,
             [property]: styleList.getPropertyValue(property) } ), {} );
-      }, element);
+      }, element`);
       elementStyles.push(styles);
     }
 
