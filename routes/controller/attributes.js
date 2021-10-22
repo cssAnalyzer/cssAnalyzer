@@ -1,18 +1,16 @@
 const puppeteer = require("puppeteer");
 const createError = require("http-errors");
-const { ENTERED_URI_LOGIC_ERROR } = require("../../constants/messages");
-const { BAD_REQUEST, OK } = require("../../constants/statusCodes");
+const { ENTERED_URI_LOGIC_ERROR, NO_URI, INTERNAL_PUPPETEER_ERROR } = require("../../constants/messages");
+const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = require("../../constants/statusCodes");
 
 async function getAttributes(req, res, next) {
   try {
+    if (!req.query.inputUrl) {
+      next(createError(BAD_REQUEST, NO_URI));
+    }
     const result = {};
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
-
     const page = await browser.newPage();
-
-    page.on("pageerror", pageerr=> {
-      next(createError(BAD_REQUEST, ENTERED_URI_LOGIC_ERROR));
-    });
 
     await page.setRequestInterception(true);
     page.on("request", req => {
@@ -47,8 +45,9 @@ async function getAttributes(req, res, next) {
         result[key].push(value);
       }
     });
-
     const propertiesData = [];
+
+    await browser.close();
 
     for (const [key, value] of Object.entries(result)) {
       propertiesData.push({
@@ -58,14 +57,12 @@ async function getAttributes(req, res, next) {
       });
     }
 
-    await browser.close();
-
     res.status(OK).send({
       totalNum: filteredStyles.length,
       filteredData: propertiesData,
     });
   } catch (err) {
-    next(err);
+    next(createError(INTERNAL_SERVER_ERROR, INTERNAL_PUPPETEER_ERROR));
   }
 }
 
