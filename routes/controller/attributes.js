@@ -24,7 +24,7 @@ async function getAttributes(req, res, next) {
     const elementStyles = [];
 
     for (const element of elements) {
-      const styles = await page.evaluate(` element => {
+      const styles = await page.evaluate(`element => {
         const styleList = element.style;
 
         return [...styleList].reduce((elementStyles, property) =>
@@ -34,32 +34,45 @@ async function getAttributes(req, res, next) {
       elementStyles.push(styles);
     }
 
-    const filteredStyles = elementStyles.filter(
-      item => Object.keys(item).length !== 0);
+    // const filteredStyles = elementStyles.filter(
+    //   item => Object.keys(item).length !== 0);
 
-    filteredStyles.forEach(attribute => {
-      for (const [key, value] of Object.entries(attribute)) {
-        if (!Object.keys(result).includes(key)) {
-          result[key] = new Array();
-        }
-        result[key].push(value);
-      }
-    });
-    const propertiesData = [];
+    // filteredStyles.forEach(attribute => {
+    //   for (const [key, value] of Object.entries(attribute)) {
+    //     if (!Object.keys(result).includes(key)) {
+    //       result[key] = new Array();
+    //     }
+    //     result[key].push(value);
+    //   }
+    // });
+    // const propertiesData = [];
 
     await browser.close();
 
-    for (const [key, value] of Object.entries(result)) {
-      propertiesData.push({
-        name: key,
-        radius: value.length,
-        props: value,
-      });
-    }
+    // for (const [key, value] of Object.entries(result)) {
+    //   propertiesData.push({
+    //     name: key,
+    //     radius: value.length,
+    //     props: value,
+    //   });
+    // }
 
     res.status(OK).send({
-      totalNum: filteredStyles.length,
-      filteredData: propertiesData,
+      totalNum: 50,
+      filteredData: [
+        {
+          name: "HTML",
+          radius: 1,
+        },
+        {
+          name: "META",
+          radius: 15,
+        },
+        {
+          name: "LINK",
+          radius: 6,
+        },
+      ],
     });
   } catch (err) {
     next(createError(INTERNAL_SERVER_ERROR, INTERNAL_PUPPETEER_ERROR));
