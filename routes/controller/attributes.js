@@ -12,27 +12,29 @@ async function getAttributes(req, res, next) {
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
     const page = await browser.newPage();
 
-    await page.setRequestInterception(true);
-    page.on("request", req => {
-      (req.resourceType() === "image" || req.resourceType() == "font") ? req.abort() : req.continue();
-    });
+    // await page.setRequestInterception(true);
+    // page.on("request", req => {
+    //   (req.resourceType() === "image"
+    // || req.resourceType() == "font") ? req.abort() : req.continue();
+    // });
 
     await page.goto(req.query.inputUrl, { waitUntil: "networkidle2" });
-    await page.waitForXPath("//*[@*]");
+    const button = await page.waitForXPath("//*[@*]");
+    const text = button.style[0];
 
-    const elements = await page.$$("*");
-    const elementStyles = [];
+    // const elements = await page.$$("*");
+    // const elementStyles = [];
 
-    for (const element of elements) {
-      const styles = await page.evaluate(`element => {
-        const styleList = element.style;
+    // for (const element of elements) {
+    //   const styles = await page.evaluate(element => {
+    //     const styleList = element.style;
 
-        return [...styleList].reduce((elementStyles, property) =>
-          ( { ...elementStyles,
-            [property]: styleList.getPropertyValue(property) } ), {} );
-      }, element`);
-      elementStyles.push(styles);
-    }
+    //     return [...styleList].reduce((elementStyles, property) =>
+    //       ( { ...elementStyles,
+    //         [property]: styleList.getPropertyValue(property) } ), {} );
+    //   }, element);
+    //   elementStyles.push(styles);
+    // }
 
     // const filteredStyles = elementStyles.filter(
     //   item => Object.keys(item).length !== 0);
@@ -73,6 +75,7 @@ async function getAttributes(req, res, next) {
           radius: 6,
         },
       ],
+      text,
     });
   } catch (err) {
     next(createError(INTERNAL_SERVER_ERROR, INTERNAL_PUPPETEER_ERROR));
