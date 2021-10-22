@@ -7,8 +7,10 @@
     "node": "14.17.4"
   },
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "NODE_ENV=development nodemon ./bin/www"
+    "start": "node ./bin/www.js",
+    "build": "npm run clean && next build",
+    "dev": "NODE_ENV=development nodemon ./bin/www",
+    "deploy-dev": "npm install && npm run build && eb deploy eb-next-app-dev"
   },
   "repository": {
     "type": "git",
