@@ -1,9 +1,15 @@
 const puppeteer = require("puppeteer");
+const createError = require("http-errors");
 const mdnCompatData = require("@mdn/browser-compat-data");
-const { OK } = require("../../constants/statusCodes");
+const { ENTERED_URI_LOGIC_ERROR } = require("../../constants/messages");
+const { BAD_REQUEST, OK } = require("../../constants/statusCodes");
 
 async function getCompatibility(req, res, next) {
   try {
+    if (!req.query.inputUrl) {
+      next(createError(BAD_REQUEST, ENTERED_URI_LOGIC_ERROR));
+    }
+
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
     const page = await browser.newPage();
 
