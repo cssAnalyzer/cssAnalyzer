@@ -32,6 +32,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   res.status(err.status || INTERNAL_SERVER_ERROR);
+  console.log(err);
   res.send("error");
 });
 
