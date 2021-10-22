@@ -5,12 +5,13 @@ const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = require("../../constants/stat
 
 async function getAttributes(req, res, next) {
   try {
-    if (!req.query.inputUrl) {
-      next(createError(BAD_REQUEST, NO_URI));
+    if (req.query.inputUrl) {
+      // next(createError(BAD_REQUEST, NO_URI));
+      res.status(OK).send("I'm working on dep env");
     }
-    const result = {};
+    // const result = {};
     const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
-    const page = await browser.newPage();
+    // const page = await browser.newPage();
 
     // await page.setRequestInterception(true);
     // page.on("request", req => {
@@ -18,9 +19,9 @@ async function getAttributes(req, res, next) {
     // || req.resourceType() == "font") ? req.abort() : req.continue();
     // });
 
-    await page.goto(req.query.inputUrl, { waitUntil: "networkidle2" });
-    const button = await page.waitForXPath("//*[@*]");
-    const text = button.style[0];
+    // await page.goto(req.query.inputUrl, { waitUntil: "networkidle2" });
+    // const button = await page.waitForXPath("//*[@*]");
+    // const text = button.style[0];
 
     // const elements = await page.$$("*");
     // const elementStyles = [];
@@ -49,7 +50,7 @@ async function getAttributes(req, res, next) {
     // });
     // const propertiesData = [];
 
-    await browser.close();
+    // await browser.close();
 
     // for (const [key, value] of Object.entries(result)) {
     //   propertiesData.push({
@@ -59,24 +60,24 @@ async function getAttributes(req, res, next) {
     //   });
     // }
 
-    res.status(OK).send({
-      totalNum: 50,
-      filteredData: [
-        {
-          name: "HTML",
-          radius: 1,
-        },
-        {
-          name: "META",
-          radius: 15,
-        },
-        {
-          name: "LINK",
-          radius: 6,
-        },
-      ],
-      text,
-    });
+    // res.status(OK).send({
+    //   totalNum: 50,
+    //   filteredData: [
+    //     {
+    //       name: "HTML",
+    //       radius: 1,
+    //     },
+    //     {
+    //       name: "META",
+    //       radius: 15,
+    //     },
+    //     {
+    //       name: "LINK",
+    //       radius: 6,
+    //     },
+    //   ],
+    //   text,
+    // });
   } catch (err) {
     next(createError(INTERNAL_SERVER_ERROR, INTERNAL_PUPPETEER_ERROR));
   }
